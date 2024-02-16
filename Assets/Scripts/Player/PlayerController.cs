@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [HideInInspector] public int id;
 
@@ -45,6 +45,20 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, 0.7f))
         {
             rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    [PunRPC]
+    public void Initialize(Player player)
+    {
+        photonPlayer = player;
+        id = player.ActorNumber;
+
+        GameManager.instance.players[id - 1] = this;
+
+        if (!photonView.IsMine)
+        {
+            rig.isKinematic = true;
         }
     }
 }
